@@ -13,5 +13,6 @@
             "database": "freedb_miniminimi",
             "username": "freedb_pedro"
         }
-    ]
+    ],
+    "maven.view": "flat"
 }
