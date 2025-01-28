@@ -19,6 +19,14 @@ public class Produto {
         return id;
     }
 
+     public void setNome(String nome) {
+        this.nome = nome;
+    }
+
+    public void setValorMinimo(double valorMinimo) {
+        this.valorMinimo = valorMinimo;
+    }
+
     public void setId(int id) {
         this.id = id;
     }

@@ -1,8 +1,8 @@
 package model;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
-public class Bid {
+public class Lance {
     private int id;
     private int idProduto;
     private String nomeParticipante;
@@ -10,9 +10,9 @@ public class Bid {
     private LocalDateTime dataLance;
 
     // Construtores
-    public Bid() {}
+    public Lance() {}
 
-    public Bid(int id, int idProduto, int nomeParticipante, double valor, Date dataLance) {
+    public Lance(int id, int idProduto, String nomeParticipante, double valor, LocalDateTime dataLance) {
         this.id = id;
         this.idProduto = idProduto;
         this.nomeParticipante = nomeParticipante;
@@ -24,31 +24,40 @@ public class Bid {
     public int getId() {
         return id;
     }
+
     public void setId(int id) {
         this.id = id;
     }
-    public int getidProduto() {
+
+    public int getIdProduto() {
         return idProduto;
     }
-    public void setidProduto(int idProduto) {
+
+    public void setIdProduto(int idProduto) {
         this.idProduto = idProduto;
     }
-    public int getnomeParticipante() {
+
+    public String getNomeParticipante() {
         return nomeParticipante;
     }
-    public void setnomeParticipante(int nomeParticipante) {
+
+    public void setNomeParticipante(String nomeParticipante) {
         this.nomeParticipante = nomeParticipante;
     }
-    public double getvalor() {
+
+    public double getValor() {
         return valor;
     }
-    public void setvalor(double valor) {
+
+    public void setValor(double valor) {
         this.valor = valor;
     }
-    public Date getdataLance() {
+
+    public LocalDateTime getDataLance() {
         return dataLance;
     }
-    public void setdataLance(Date dataLance) {
+
+    public void setDataLance(LocalDateTime dataLance) {
         this.dataLance = dataLance;
     }
 }
