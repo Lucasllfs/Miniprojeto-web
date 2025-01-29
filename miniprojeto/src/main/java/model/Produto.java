@@ -31,19 +31,12 @@ public class Produto {
         this.id = id;
     }
 
-    public String getnome() {
+    public String getNome() {
         return nome;
     }
 
-    public void setnome(String nome) {
-        this.nome = nome;
-    }
-
-    public double getvalorMinimo() {
+    public double getValorMinimo() {
         return valorMinimo;
     }
 
-    public void setvalorMinimo(double valorMinimo) {
-        this.valorMinimo = valorMinimo;
-    }
 }
