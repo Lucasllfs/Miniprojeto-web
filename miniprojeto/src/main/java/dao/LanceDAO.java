@@ -40,7 +40,15 @@ public class LanceDAO {
                 lance.setIdProduto(rs.getInt("id_produto"));
                 lance.setNomeParticipante(rs.getString("nome_participante"));
                 lance.setValor(rs.getDouble("valor"));
-                lance.setDataLance(rs.getTimestamp("data_lance").toLocalDateTime());
+                lance.setDataLance(
+    rs.getTimestamp("data_lance") // Recupera como Timestamp
+       .toLocalDateTime()          // Converte para LocalDateTime
+);
+
+System.out.println("Dados do banco:"); // Depuração
+System.out.println("Nome: " + rs.getString("nome_participante"));
+System.out.println("Valor: " + rs.getDouble("valor"));
+System.out.println("Data: " + rs.getTimestamp("data_lance"));
 
                 lances.add(lance);
             }
