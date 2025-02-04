@@ -80,9 +80,11 @@ import="model.Produto" %> <% List<Produto>
         </div>
     
         <script>
-            const TEMPO_ATUALIZACAO_LANCES = 20000; // 20 segundos
+            const TEMPO_VISUALIZACAO_LANCES = 20000; // 20 segundos escondido e 20 visualizado
+            const TEMPO_ATUALIZACAO_LANCES = 3000; // 3 segundos
             const TEMPO_BLOQUEIO_LANCE = 10000; // 10 segundos
-        
+
+            let podeVerLances = true;
             let podeFazerLance = true;
             let proximaAtualizacao = Date.now() + TEMPO_ATUALIZACAO_LANCES;
             let desbloqueioLance = Date.now();
@@ -90,12 +92,14 @@ import="model.Produto" %> <% List<Produto>
             $(document).ready(function () {
                 // Atualizar lista de lances a cada 20 segundos
                 setInterval(atualizarLances, TEMPO_ATUALIZACAO_LANCES);
+
+
         
                 // Temporizador para atualizar os contadores de tempo
                 setInterval(atualizarTemporizador, 1000);
         
                 $('#formLance').submit(function (e) {
-    e.preventDefault();
+                e.preventDefault();
     if (!podeFazerLance) return;
 
     const produtoId = $('#produto').val();
@@ -225,6 +229,11 @@ import="model.Produto" %> <% List<Produto>
         
                 if (tempoRestanteAtualizacao === 0) {
                     atualizarLances();
+                    if (podeVerLances) {
+                        //tirar visualizacao dos lances
+                        $('#lancesContainer').prop('hidden', true);
+                    }
+                    podeVerLances = !podeVerLances;
                 }
             }
         </script>
