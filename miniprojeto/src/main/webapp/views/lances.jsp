@@ -80,78 +80,67 @@ import="model.Produto" %> <% List<Produto>
         </div>
     
         <script>
-            const TEMPO_VISUALIZACAO_LANCES = 20000; // 20 segundos escondido e 20 visualizado
-            const TEMPO_ATUALIZACAO_LANCES = 3000; // 3 segundos
-            const TEMPO_BLOQUEIO_LANCE = 10000; // 10 segundos
-
-            let podeVerLances = true;
+            const TEMPO_ATUALIZACAO_LANCES = 20000; // 20 segundos (X)
+            const TEMPO_BLOQUEIO_LANCE = 10000; // 10 segundos (Y)
+        
             let podeFazerLance = true;
             let proximaAtualizacao = Date.now() + TEMPO_ATUALIZACAO_LANCES;
             let desbloqueioLance = Date.now();
         
             $(document).ready(function () {
-                // Atualizar lista de lances a cada 20 segundos
                 setInterval(atualizarLances, TEMPO_ATUALIZACAO_LANCES);
-
-
-        
-                // Temporizador para atualizar os contadores de tempo
                 setInterval(atualizarTemporizador, 1000);
         
                 $('#formLance').submit(function (e) {
-                e.preventDefault();
-    if (!podeFazerLance) return;
+                    e.preventDefault();
+                    if (!podeFazerLance) return;
+        
+                    const produtoId = $('#produto').val();
+                    const nome = $('#nome').val();
+                    const valor = parseFloat($('#valor').val());
+                    const status = $('#statusMessage');
+                    const valorMinimo = parseFloat($('#produto option:selected').data('valor-minimo') || 0);
+        
+                    if (valor <= valorMinimo) {
+                        status.html(`Erro: O lance deve ser maior que o valor mínimo`)
+                            .removeClass()
+                            .addClass('error')
+                            .show();
+                        setTimeout(() => status.hide(), 5000);
+                        return;
+                    }
+        
+                    $.ajax({
+                        url: '${pageContext.request.contextPath}/lances',
+                        method: 'POST',
+                        data: {
+                            idProduto: produtoId,
+                            nomeParticipante: nome,
+                            valor: valor
+                        },
+                        success: function () {
+    $('#nome').val('');
+    $('#valor').val('');
+    status.html('Lance registrado com sucesso!')
+        .removeClass()
+        .addClass('success')
+        .show();
+    setTimeout(() => status.hide(), 3000);
 
-    const produtoId = $('#produto').val();
-    const nome = $('#nome').val();
-    const valor = parseFloat($('#valor').val()); // Convertemos para número
-    const status = $('#statusMessage');
-    
-    // Captura o valor mínimo do produto selecionado
-    const valorMinimo = parseFloat(
-        $('#produto option:selected').data('valor-minimo') || 0
-    );
-
-    // Validação do valor
-    if (valor <= valorMinimo) {
-        status.html(`Erro: O lance deve ser maior que o valor mínimo`)
-            .removeClass()
-            .addClass('error')
-            .show();
-        setTimeout(() => status.hide(), 5000);
-        return; // Impede o envio
-    }
-
-    $.ajax({
-        url: '${pageContext.request.contextPath}/lances',
-        method: 'POST',
-        data: {
-            idProduto: produtoId,
-            nomeParticipante: nome,
-            valor: valor
-        },
-        success: function () {
-            $('#nome').val('');
-            $('#valor').val('');
-            status.html('Lance registrado com sucesso!')
-                .removeClass()
-                .addClass('success')
-                .show();
-            setTimeout(() => status.hide(), 3000);
-
-            podeFazerLance = false;
-            desbloqueioLance = Date.now() + TEMPO_BLOQUEIO_LANCE;
-            $('#formLance button').prop('disabled', true);
-        },
-        error: function (xhr) {
-            status.html('Erro: ' + xhr.responseText)
-                .removeClass()
-                .addClass('error')
-                .show();
-            setTimeout(() => status.hide(), 5000);
-        }
-    });
-});
+    podeFazerLance = false;
+    // Altera aqui para bloquear após a próxima atualização
+    desbloqueioLance = proximaAtualizacao + TEMPO_BLOQUEIO_LANCE;
+    $('#formLance button').prop('disabled', true);
+},
+                        error: function (xhr) {
+                            status.html('Erro: ' + xhr.responseText)
+                                .removeClass()
+                                .addClass('error')
+                                .show();
+                            setTimeout(() => status.hide(), 5000);
+                        }
+                    });
+                });
             });
         
             function atualizarLances() {
@@ -196,44 +185,36 @@ import="model.Produto" %> <% List<Produto>
                                 $('<td>').text(valor),
                                 $('<td>').text(data)
                             );
-        
                             table.find('tbody').append(row);
                         });
         
                         container.html(table);
+                        podeFazerLance = false;
+    desbloqueioLance = Date.now() + TEMPO_BLOQUEIO_LANCE;
+    $('#formLance button').prop('disabled', true);
+    
+    proximaAtualizacao = Date.now() + TEMPO_ATUALIZACAO_LANCES;
                     },
                     error: function () {
                         container.html('<p class="error">Erro ao carregar lances</p>');
                     }
                 });
-        
-                // Atualiza o tempo da próxima atualização de lances
-                proximaAtualizacao = Date.now() + TEMPO_ATUALIZACAO_LANCES;
             }
         
             function atualizarTemporizador() {
                 const agora = Date.now();
         
-                // Calcula o tempo restante para a próxima atualização dos lances
+                // Tempo restante para atualização
                 let tempoRestanteAtualizacao = Math.max(0, Math.ceil((proximaAtualizacao - agora) / 1000));
                 $('#tempoAtualizacao').text(tempoRestanteAtualizacao);
         
-                // Calcula o tempo restante para o desbloqueio do botão de lance
+                // Tempo restante para desbloquear o lance
                 let tempoRestanteLance = Math.max(0, Math.ceil((desbloqueioLance - agora) / 1000));
                 $('#tempoLance').text(tempoRestanteLance);
         
                 if (tempoRestanteLance === 0 && !podeFazerLance) {
                     podeFazerLance = true;
                     $('#formLance button').prop('disabled', false);
-                }
-        
-                if (tempoRestanteAtualizacao === 0) {
-                    atualizarLances();
-                    if (podeVerLances) {
-                        //tirar visualizacao dos lances
-                        $('#lancesContainer').prop('hidden', true);
-                    }
-                    podeVerLances = !podeVerLances;
                 }
             }
         </script>
